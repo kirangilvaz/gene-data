@@ -16,17 +16,19 @@ from email.MIMEText import MIMEText
 from email.Utils import COMMASPACE, formatdate
 from email import Encoders
 
+#update SMTP settings
 fromEmail='kirangilvaz@gmail.com'
 smtpServer='mail.rpi.edu'
 smtpUsername='gilvak'
 smtpPassword='*****'
 smtpPort='587'
 
+#update these values
 outputDirectory='C:/Users/Kiran/Documents/NetBeansProjects/plot/web/'
 downloadDirectory='C:/wamp/www/geneticanalysis/gene/downloads/'
 plotUrl='http://24.92.59.145:8084/plot/index.html'
 
-
+#thread to process data
 class ProcessData(threading.Thread):
         def __init__(self,fileName,outputFileName,email):
                 self.fileName=fileName
@@ -42,7 +44,7 @@ class ProcessData(threading.Thread):
 			print "Processing completed"
 
 
-
+#sends email to user
 def sendMail(send_from,send_to, subject, text, fileName):
 
         msg = MIMEMultipart()
@@ -72,7 +74,7 @@ def sendMail(send_from,send_to, subject, text, fileName):
 
         smtp.sendmail(send_from, send_to, msg.as_string())
         smtp.close()
-
+#handles uploaded file
 def handle_uploaded_file(fileObj,email):
 	fileName=email.replace(' ','').replace('@','').replace('.','')
 	outputFileName=fileName+"_"+str(fileObj.name)
