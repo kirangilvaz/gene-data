@@ -1,0 +1,27 @@
+<html>
+<head>
+<script>
+function validate(form_id,email) {
+ 
+   var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+   var address = document.forms[form_id].elements[email].value;
+   if(reg.test(address) == false) {
+ 
+      alert('Invalid Email Address');
+      return false;
+   }
+   
+}
+</script>
+</head>
+<body>
+<center>
+<form id="form_id" method="post" action="/gene/fileupload" enctype="multipart/form-data" onsubmit="javascript:return validate('form_id','email');">
+{% csrf_token %}
+<p><table><tr><td>Select file</td><td><input type="file" name="file"/></td></tr>
+<tr><td>Email</td><td><input type="text" name="email"></td></tr>
+<tr><td></td><td><input type="submit" value="Upload"/></td></tr></table></p>
+</form>
+</center>
+</body>
+</html>

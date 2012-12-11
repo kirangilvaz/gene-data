@@ -1,0 +1,15 @@
+sudo apt-get install python-pip
+sudo apt-get install python-lxml
+sudo apt-get install python-mysqldb
+oauth
+simplejson
+sudo pip install pyquery
+
+
+sudo apt-get install python-pygraphviz
+
+
+gnuplot
+sudo apt-get install gnuplot python-gnuplot
+
+dude
