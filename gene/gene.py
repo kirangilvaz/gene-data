@@ -11,9 +11,12 @@ from numpy.linalg import svd
 from collections import OrderedDict
 import json
 
+#update these directories
 geneDataDirectory='C:/wamp/www/geneticanalysis/gene/DATA/'
 outputDirectory='C:/Users/Kiran/Documents/NetBeansProjects/plot/web/'
 downloadDirectory='C:/wamp/www/geneticanalysis/gene/downloads/'
+
+#color selector
 def getColor(region):
 	return {
         'CENTRAL_SOUTH_ASIA': 'b',
@@ -25,6 +28,7 @@ def getColor(region):
 	'AMERICA':'DarkOrange',
         }.get(region, 'k') 
 
+#calculates nearest neighbours
 def euclideanDistance(matrix):
 	matData=scipy.io.loadmat(geneDataDirectory+'regions.mat')
         regions=matData.get('regions')
@@ -56,6 +60,7 @@ def euclideanDistance(matrix):
 	print 'User region '+str(regions[rowSize][0][0])
 	return closestRegions
 
+#generates 2d,3d plots and JSON file
 def generateOutput(matrix,fileName):
 	fig2D=plt.figure()
 	fig3D=plt.figure()
@@ -84,7 +89,7 @@ def generateOutput(matrix,fileName):
         ax2d.scatter([matrix[i][0]],[matrix[i][1]],color=getColor(jsonValue['region']))
         ax2d.annotate('Individual', xy=(matrix[i][0], matrix[i][1]),  xycoords='data', xytext=(0, 60), textcoords='offset points',arrowprops=dict(arrowstyle="->"))
 	ax3d.scatter([matrix[i][0]],[matrix[i][1]],[matrix[i][2]],color=getColor(jsonValue['region']),marker='x')
-	
+	#create custom legends
 	p1=plt.Rectangle((0, 0), 1, 1, fc="b")
 	p2=plt.Rectangle((0, 0), 1, 1, fc="g")
 	p3=plt.Rectangle((0, 0), 1, 1, fc="r")
@@ -96,14 +101,14 @@ def generateOutput(matrix,fileName):
 	ax2d.legend([p1,p2,p3,p4,p5,p6,p7,p8], ["Central South Asia","Europe","Oceania","Middle East","Africa","East Asia","America","Individual"])
 	ax3d.legend([p1,p2,p3,p4,p5,p6,p7,p8], ["Central South Asia","Europe","Oceania","Middle East","Africa","East Asia","America","Individual"])
 	jsonData.append(jsonValue)
-	
+	#write data to disk
 	f=open(outputDirectory+fileName+'.json','w')
 	f.write(json.dumps(jsonData))
 	f.close()
-	
 	fig2D.savefig(outputDirectory+fileName+'_2d.png')
 	fig3D.savefig(outputDirectory+fileName+'_3d.png')
 
+#compute data
 def processThis(fileName,userFileName):
         fileObj=csv.reader(open(downloadDirectory+userFileName))
 	csvList=[]
@@ -116,20 +121,23 @@ def processThis(fileName,userFileName):
         set1=data.get('set1')
 	currentUserVectorRow=0	
 	for k in range(22):
+		#compute A series
 		print "Computing ",str(k+1),strftime("%Y-%m-%d %H:%M:%S", localtime())
 		matData=scipy.io.loadmat(geneDataDirectory+'SNchr'+str(k+1)+'A.mat')
 		A=matData.get('A')
 		aCols=A.shape[1]
 		aRows=A.shape[0]
 		count=0
+		#filter columns from SET1.mat
 		for i in range(aCols):
 			if i not in set1:
 				A=scipy.delete(A,(i-count),1)
 				count+=1
-
+		#append column from user vector
 		A=np.column_stack((A,csvList[currentUserVectorRow:(currentUserVectorRow+aRows)]))
 		currentUserVectorRow=currentUserVectorRow+aRows
 		aCols=A.shape[1]
+		#calculate mean center
 		for j in range(aCols):
 			colSum=0
 			indexExcludeCount=0
@@ -147,21 +155,22 @@ def processThis(fileName,userFileName):
 		At=np.transpose(A)
 		AtdA=np.dot(At,A)
 		T=T+AtdA
-
+		#compute B series
                 matData=scipy.io.loadmat(geneDataDirectory+'SNchr'+str(k+1)+'B.mat')
                 A=matData.get('A')
                 aCols=A.shape[1]
                 aRows=A.shape[0]
                 count=0
+		#filter columns from SET1.mat
                 for i in range(aCols):
                         if i not in set1:
                                 A=scipy.delete(A,(i-count),1)
                                 count+=1
-
+		#append column from user vector
 		A=np.column_stack((A,csvList[currentUserVectorRow:(currentUserVectorRow+aRows)]))
                 currentUserVectorRow=currentUserVectorRow+aRows
 		aCols=A.shape[1]
-	
+		#calculate mean center
                 for j in range(aCols):
                         colSum=0
                         indexExcludeCount=0
@@ -181,6 +190,7 @@ def processThis(fileName,userFileName):
                 T=T+AtdA
         	print "Completed ",str(k+1)," with ",T.shape[0],T.shape[1]," @ ",strftime("%Y-%m-%d %H:%M:%S", localtime())
 	print "Begin SVD"
+	#compute SVD
 	U,E2,V=svd(T)
 	print "SVD completed"
 	return U
