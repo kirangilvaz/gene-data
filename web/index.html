@@ -1,0 +1,152 @@
+<html>
+<head>
+<script type="text/javascript" src="script/canvasXpress.min.js"></script>
+<script type="text/javascript" src="script/excanvas.js"></script>
+<script type="text/javascript" src="script/canvasutilities.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+            vars[key] = value;
+        });
+        return vars;
+    }
+
+function loadData(){
+var xmlHttp;
+try{xmlHttp=new XMLHttpRequest();}
+catch (e){
+try{xmlHttp=new ActiveXObject('Msxml2.XMLHTTP');}
+catch (e){
+try{xmlHttp=new ActiveXObject('Microsoft.XMLHTTP');}
+catch (e){alert('Your browser does not support AJAX!');return false;}
+}}
+xmlHttp.onreadystatechange=function(){
+if(xmlHttp.readyState==1){document.getElementById('center').innerHTML = "<center><img src='images/loading.gif'></center>";}
+if(xmlHttp.readyState==4){parseJson(xmlHttp.responseText);}
+}
+fileName=getUrlVars()["data"];
+xmlHttp.open('GET',fileName);xmlHttp.send(null);
+}
+
+
+function parseJson(jsonData)
+{
+var obj = jQuery.parseJSON(jsonData);
+var jsonArray=new Array();
+    for (var i=0, len=obj.length; i < len; i++) {
+        jsonArray[i]=new Array(obj[i].x,obj[i].y,obj[i].z,obj[i].region);
+    }
+	
+	showdemo(jsonArray);
+
+}
+</script>
+<script language="javascript">
+	function colorCombination(country) {
+		
+		switch (country) {
+			case "INDIVIDUAL":
+				return "#000000";
+				break;
+			case "AFRICA":
+				return "#7de997";
+				break;
+			case "MIDDLE_EAST":
+				return "#827aec";
+				break;
+			case "CENTRAL_SOUTH_ASIA":
+				return "#e22626";
+				break;
+			case "EAST_ASIA":
+				return "#bf2fb5";
+				break;
+			case "EUROPE":
+				return "#c0ce08";
+				break;
+			case "AMERICA":
+				return "#4b6158";
+				break;
+			case "OCEANIA":
+				return "#796163";
+				break;
+			
+		}
+	}
+
+	  function showdemo(jsonArray) {
+		var canvas =  document.getElementById('canvas'); 
+		if (typeof G_vmlCanvasManager != 'undefined') { 
+				G_vmlCanvasManager.initElement(canvas); 
+		} 
+		
+		/*d=[[0.036462549,0.017630769,-0.038052239,'MIDDLE_EAST'],
+			[-0.056051295,0.069670491,0.009567286,'INDIVIDUAL'],
+			[-0.056051295,0.069670491,0.014567286,'EUROPE']];
+		*/
+		d=jsonArray;
+		//document.write(d);
+		new CanvasXpress("canvas", 
+			{
+				y: {smps: ["X","Y","Z"],data:d}
+			}, 
+			{graphType: "Scatter3D",xAxis: ["X"],yAxis: ["Y"],zAxis: ["Z"],scatterType: false,show3DGrid:true}
+		)
+   }
+   
+	
+	
+
+
+
+   function setBGcolor() {
+
+		var th1 = document.getElementById('th1');
+		th1.style.background = colorCombination('INDIVIDUAL');
+		var th1 = document.getElementById('th1');
+		th1.style.background = colorCombination('AFRICA');
+		th1 = document.getElementById('th2');
+		th1.style.background = colorCombination('MIDDLE_EAST');
+		th1 = document.getElementById('th3');
+		th1.style.background = colorCombination('CENTRAL_SOUTH_ASIA');
+		th1 = document.getElementById('th4');
+		th1.style.background = colorCombination('OCEANIA');
+		th1 = document.getElementById('th5');
+		th1.style.background = colorCombination('AMERICA');
+		th1 = document.getElementById('th6');
+		th1.style.background = colorCombination('EAST_ASIA');
+		th1 = document.getElementById('th7');
+		th1.style.background = colorCombination('EUROPE');
+   }
+	</script>
+
+  
+
+  <body onload="loadData()">
+            <div>
+				
+              <canvas id="canvas" width="1024" height="900"></canvas>
+            </div>
+			
+      <table>
+	  
+
+<tr align="left"><th>AFRICA</th><th id="th1" width="30" height="20" bgcolor="">&nbsp;</th></tr>			
+<tr align="left"><th>MIDDLE_EAST</th><th id="th2" width="30" height="20" bgcolor="">&nbsp;</th></tr>			
+<tr align="left"><th>CENTRAL_SOUTH_ASIA</th><th id="th3" width="30" height="20" bgcolor="">&nbsp;</th></tr>			
+<tr align="left"><th>OCEANIA</th><th id="th4" width="30" height="20" bgcolor="">&nbsp;</th></tr>			
+<tr align="left"><th>AMERICA</th><th id="th5" width="30" height="20" bgcolor="">&nbsp;</th></tr>			
+<tr align="left"><th>EAST_ASIA</th><th id="th6" width="30" height="20" bgcolor="">&nbsp;</th></tr>			
+<tr align="left"><th>EUROPE</th><th id="th7" width="30" height="20" bgcolor="">&nbsp;</th></tr>			
+</table>			
+    
+	
+<script>
+setBGcolor();
+
+</script>
+
+  </body>
+
+</html>
